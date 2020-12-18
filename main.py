@@ -12,26 +12,47 @@ screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # initiate the window
 player_image = pygame.image.load('bear.png')
 moving_right = False
 moving_left = False
+moving_down = False
+moving_up = False
+player_location = [50, 50]
+player_y_momentum = 0
 
 while True:  # game-loop
+    screen.fill((0, 0, 0))
+    screen.blit(player_image, player_location)
 
-    screen.blit(player_image, (50, 50))
+    if moving_right == True:
+        player_location[0] += 4
+    if moving_left == True:
+        player_location[0] -= 4
+    if moving_down == True:
+        player_location[1] += 4
+    if moving_up == True:
+        player_location[1] -= 4
 
-    for event in pygame.event.get():
-        if event.type == QUIT:
+    for event in pygame.event.get():  # event loop
+        if event.type == QUIT:  # check for window quit
             print("Bye! \nMade by Adi Jian @2021")
-            pygame.quit()
-            sys.exit()
+            pygame.quit()  # stop pygame
+            sys.exit()  # stop script
         if event.type == KEYDOWN:
-            if event.key == K_RIGHT:
+            if event.key == K_d:
                 moving_right = True
-            if event.key == K_LEFT:
+            if event.key == K_a:
                 moving_left = True
+            if event.key == K_w:
+                moving_up = True
+            if event.key == K_s:
+                moving_down = True
         if event.type == KEYUP:
-            if event.key == K_RIGHT:
+            if event.key == K_d:
                 moving_right = False
-            if event.key == K_LEFT:
+            if event.key == K_a:
                 moving_left = False
+            if event.key == K_w:
+                moving_up = False
+            if event.key == K_s:
+                moving_down = False
 
     pygame.display.update()
     clock.tick(60)  # maintain 60 fps
