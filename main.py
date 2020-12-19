@@ -1,48 +1,139 @@
-import pygame
-import sys
-from pygame.locals import *
+import pygame, sys  # import pygame and sys
 
 clock = pygame.time.Clock()  # set up the clock
 
-pygame.init()  # initiates pygame
+from pygame.locals import *  # import pygame modules
 
-WINDOW_SIZE = (400, 400)
+pygame.init()  # initiate pygame
 
-screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # initiate the window
-player_image = pygame.image.load('bear.png')
+pygame.display.set_caption('Pygame Window')  # set the window name
+
+WINDOW_SIZE = (1200, 800)  # set up window size
+
+screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # initiate screen
+
+display = pygame.Surface((1200, 800))
+
+player_image = pygame.image.load('bear.png').convert()
+# player_image.set_colorkey((0, 0, 0))
+
+grass_image = pygame.image.load('grass.png')
+TILE_SIZE = grass_image.get_width()
+
+dirt_image = pygame.image.load('dirt.png')
+
+game_map = [['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+            ['2', '2', '0', '2', '0', '0', '0', '2', '2', '2', '2', '2', '0', '0', '0', '2', '2', '2', '2', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
+            ['1', '1', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
+            ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
+            ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']]
+
+
+def collision_test(rect, tiles):
+    hit_list = []
+    for tile in tiles:
+        if rect.colliderect(tile):
+            hit_list.append(tile)
+    return hit_list
+
+
+def move(rect, movement, tiles):
+    collision_types = {'top': False, 'bottom': False, 'right': False, 'left': False}
+    rect.x += movement[0]
+    hit_list = collision_test(rect, tiles)
+    for tile in hit_list:
+        if movement[0] > 0:
+            rect.right = tile.left
+            collision_types['right'] = True
+        elif movement[0] < 0:
+            rect.left = tile.right
+            collision_types['left'] = True
+    rect.y += movement[1]
+    hit_list = collision_test(rect, tiles)
+    for tile in hit_list:
+        if movement[1] > 0:
+            rect.bottom = tile.top
+            collision_types['bottom'] = True
+        elif movement[1] < 0:
+            rect.top = tile.bottom
+            collision_types['top'] = True
+    return rect, collision_types
+
+
 moving_right = False
 moving_left = False
-moving_down = False
 moving_up = False
-player_location = [50, 50]
+moving_down = False
+
 player_y_momentum = 0
-player_rect = pygame.Rect(player_location[0], player_location[1], player_image.get_width(), player_image.get_height())
-test_rect = pygame.Rect(100, 100, 100, 50)
+air_timer = 0
 
-while True:  # game-loop
-    screen.fill((0, 0, 0))
-    screen.blit(player_image, player_location)
+player_rect = pygame.Rect(300, 700, player_image.get_width(), player_image.get_height())
+# test_rect = pygame.Rect(100, 100, 100, 50)
 
-    if moving_right == True:
-        player_location[0] += 3
-    if moving_left == True:
-        player_location[0] -= 3
-    if moving_down == True:
-        player_location[1] += 1.5
-    if moving_up == True:
-        player_location[1] -= 3
+while True:  # game loop
+    display.fill((0, 0, 0))
 
-    player_rect.x = player_location[0]
-    player_rect.y = player_location[1]
+    tile_rects = []
+    y = 0
+    for row in game_map:
+        x = 0
+        for tile in row:
+            if tile == '1':
+                display.blit(dirt_image, (x * TILE_SIZE, y * TILE_SIZE))
+            if tile == '2':
+                display.blit(grass_image, (x * TILE_SIZE, y * TILE_SIZE))
+            if tile != '0':
+                tile_rects.append(pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+            x += 1
+        y += 1
 
-    if player_rect.colliderect(test_rect):
-        pygame.draw.rect(screen, (255, 0, 0), test_rect)
+    player_movement = [0, 0]
+    if moving_right:
+        player_movement[0] += 2
+    if moving_left:
+        player_movement[0] -= 2
+    player_movement[1] += player_y_momentum
+    player_y_momentum += 0.8
+    if player_y_momentum > 2:
+        player_y_momentum = 2
+    if moving_up:
+        player_movement[1] -= 2
+    if moving_down:
+        player_movement[1] += 2
+
+    player_rect, collisions = move(player_rect, player_movement, tile_rects)
+    #
+    if collisions['bottom']:
+        player_y_momentum = 0
+        air_timer = 0
     else:
-        pygame.draw.rect(screen, (0, 0, 0), test_rect)
+        air_timer += 0.1
+
+    display.blit(player_image, (player_rect.x, player_rect.y))
 
     for event in pygame.event.get():  # event loop
         if event.type == QUIT:  # check for window quit
-            print("Bye! \nMade by Adi Jian @2021")
             pygame.quit()  # stop pygame
             sys.exit()  # stop script
         if event.type == KEYDOWN:
@@ -51,6 +142,7 @@ while True:  # game-loop
             if event.key == K_a:
                 moving_left = True
             if event.key == K_w:
+                player_y_momentum = -4.5
                 moving_up = True
             if event.key == K_s:
                 moving_down = True
@@ -64,5 +156,7 @@ while True:  # game-loop
             if event.key == K_s:
                 moving_down = False
 
-    pygame.display.update()
+    surf = pygame.transform.scale(display, WINDOW_SIZE)
+    screen.blit(surf, (0, 0))
+    pygame.display.update()  # update display
     clock.tick(60)  # maintain 60 fps
