@@ -10,7 +10,7 @@ player_image = pygame.image.load('images/Bear_walks_right/1.png')
 bg = pygame.image.load('images/background.png')
 
 
-class Player(object):
+class Player:  # init player
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -49,8 +49,35 @@ class Player(object):
                          pygame.image.load('images/Bear_walks_left/14.png'),
                          pygame.image.load('images/Bear_walks_left/15.png')]
         self.box = pygame.Rect(self.x, self.y, player_image.get_width(), player_image.get_height())
+        self.up = False
+        self.down = False
+        self.movement = [0, 0]
+        self.tiles = [pygame.Rect(800, 800, 100, 100), pygame.Rect(100, 100, 100, 100)]
 
-    def draw1(self, window):
+    def keys(self):  # basic walking keys of character
+        keys = pygame.key.get_pressed()  # moving keys
+        if keys[pygame.K_a] and self.x > self.vel:
+            self.x -= self.vel
+            self.left = True
+            self.right = False
+        elif keys[pygame.K_d] and self.x < screenSize[0] - self.width - self.vel:
+            self.x += self.vel
+            self.right = True
+            self.left = False
+        else:
+            self.right = False
+            self.left = False
+            self.walkCount = 0
+        if keys[pygame.K_w] and self.y > self.vel:
+            self.y -= self.vel
+            self.up = True
+            self.down = False
+        if keys[pygame.K_s] and self.y < screenSize[0] - self.height - self.vel:
+            self.y += self.vel
+            self.down = True
+            self.up = False
+
+    def walking_animation(self, window):  # show walking animations
         if self.walkCount + 1 >= 14:
             self.walkCount = 0
 
@@ -63,47 +90,66 @@ class Player(object):
         else:
             window.blit(player_image, (self.x, self.y))
 
+    def collision_test(self):
+        collisions = []  # number of collisions
+        for tile in self.tiles:
+            if self.box.colliderect(tile):
+                collisions.append(tile)
+        return collisions
 
-def redraw_game_window():
-    win.blit(bg, (0, 0))
-    Bear.draw1(win)
-#  collision test-------------------------------------
-    Bear.box.x = Bear.x
-    Bear.box.y = Bear.y
-    if Bear.box.colliderect(test_rect):
-        pygame.draw.rect(win, (255, 0, 0), test_rect)
-    else:
-        pygame.draw.rect(win, (0, 0, 0), test_rect)
-# ----------------------------------------------------
-    pygame.display.update()
+    def move_collision(self):  # player movement collision
+        self.box.x += self.movement[0]
+        collisions = self.collision_test()
+        for tile in collisions:
+            if self.movement[0] > 0:
+                self.box.right = tile.left
+            if self.movement[0] < 0:
+                self.box.left = tile.right
+        self.box.y += self.movement[0]
+        collisions = self.collision_test()
+        for tile in collisions:
+            if self.movement[1] > 0:
+                self.box.bottom = tile.top
+            if self.movement[1] < 0:
+                self.box.top = tile.bottom
+        return self.box
+
+    def movement(self):
+        if self.right:
+            self.movement[0] += 5
+        if self.left:
+            self.movement[0] -= 5
+        if self.up:
+            self.movement[1] -= 5
+        if self.down:
+            self.movement[1] += 5
+
+    def redraw_game_window(self):
+        win.blit(bg, (0, 0))
+        self.box = self.move_collision()
+        self.box.x = self.x
+        self.box.y = self.y
+        for tile in self.tiles:
+            pygame.draw.rect(win, (255, 255, 255), tile)
+        pygame.draw.rect(win, (255, 255, 255), self.box)
+        self.walking_animation(win)
+        pygame.display.update()
 
 
+# GAME vars -----------------------------------------------
 Bear = Player(750, 450, 60, 60)
-test_rect = pygame.Rect(800, 800, 800, 750)
+global tiles
+# tiles = [pygame.Rect(800, 800, 100, 100), pygame.Rect(100, 100, 100, 100)]
+down = False
+up = False
 game_run = True
+# GAME ----------------------------------------------------
 while game_run:
     clock.tick(60)  # maintain 60 fps
-    redraw_game_window()
+    Bear.redraw_game_window()
     for event in pygame.event.get():  # check all events
         if event.type == pygame.QUIT:
             game_run = False
-
-    keys = pygame.key.get_pressed()  # moving keys
-    if keys[pygame.K_a] and Bear.x > Bear.vel:
-        Bear.x -= Bear.vel
-        Bear.left = True
-        Bear.right = False
-    elif keys[pygame.K_d] and Bear.x < screenSize[0] - Bear.width - Bear.vel:
-        Bear.x += Bear.vel
-        Bear.right = True
-        Bear.left = False
-    else:
-        Bear.right = False
-        Bear.left = False
-        walkCount = 0
-    if keys[pygame.K_w] and Bear.y > Bear.vel:
-        Bear.y -= Bear.vel
-    if keys[pygame.K_s] and Bear.y < screenSize[0] - Bear.height - Bear.vel:
-        Bear.y += Bear.vel
+    Bear.keys()
 
 pygame.quit()
