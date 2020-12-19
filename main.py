@@ -16,19 +16,29 @@ moving_down = False
 moving_up = False
 player_location = [50, 50]
 player_y_momentum = 0
+player_rect = pygame.Rect(player_location[0], player_location[1], player_image.get_width(), player_image.get_height())
+test_rect = pygame.Rect(100, 100, 100, 50)
 
 while True:  # game-loop
     screen.fill((0, 0, 0))
     screen.blit(player_image, player_location)
 
     if moving_right == True:
-        player_location[0] += 4
+        player_location[0] += 3
     if moving_left == True:
-        player_location[0] -= 4
+        player_location[0] -= 3
     if moving_down == True:
-        player_location[1] += 4
+        player_location[1] += 1.5
     if moving_up == True:
-        player_location[1] -= 4
+        player_location[1] -= 3
+
+    player_rect.x = player_location[0]
+    player_rect.y = player_location[1]
+
+    if player_rect.colliderect(test_rect):
+        pygame.draw.rect(screen, (255, 0, 0), test_rect)
+    else:
+        pygame.draw.rect(screen, (0, 0, 0), test_rect)
 
     for event in pygame.event.get():  # event loop
         if event.type == QUIT:  # check for window quit
